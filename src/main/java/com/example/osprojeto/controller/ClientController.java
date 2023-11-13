@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class ClientController {
@@ -31,18 +32,18 @@ public class ClientController {
     public void salvar(@RequestBody ClientDto clientDto){
         repository.save(new Client(clientDto));
     }
+
     @GetMapping(path = "/client/{name}")
     public ResponseEntity<List<Client>>FindClientByName(@PathVariable(name = "name")String name){
         List<Client> client = repository.searchByName(name.trim());
 
         return new ResponseEntity<List<Client>>(client,HttpStatus.OK);
     }
-    @GetMapping(path ="/clientes/{name]")
-    public ResponseEntity<List<Client>>DeleteByName(@PathVariable(name = "name")String name){
-        List<Client> client = repository.DeleteByName(name);
 
-        return new ResponseEntity<List<Client>>(client,HttpStatus.OK);
-    }
-
+//   @DeleteMapping(path = "/clientes/{name}")
+//    public Optional<Client> FindDeleteByName(@PathVariable(name = "name")String name){
+//        Optional<Client> client = repository.delete(name);
+//        return client;
+//   }
 
 }
