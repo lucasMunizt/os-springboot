@@ -2,6 +2,7 @@ package com.example.osprojeto.controller;
 
 import com.example.osprojeto.Dtos.ClientDto;
 import com.example.osprojeto.Repository.ClientRepository;
+import com.example.osprojeto.Service.Servicess;
 import com.example.osprojeto.entity.Client;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,11 +11,15 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class ClientController {
     @Autowired
     private ClientRepository repository;
+
+    @Autowired
+    private Servicess servicess;
 
     @GetMapping(path = "/client")
     public ResponseEntity<List<Client>> findAll(){
@@ -31,18 +36,29 @@ public class ClientController {
     public void salvar(@RequestBody ClientDto clientDto){
         repository.save(new Client(clientDto));
     }
+
     @GetMapping(path = "/client/{name}")
     public ResponseEntity<List<Client>>FindClientByName(@PathVariable(name = "name")String name){
         List<Client> client = repository.searchByName(name.trim());
 
         return new ResponseEntity<List<Client>>(client,HttpStatus.OK);
     }
-    @GetMapping(path ="/clientes/{name]")
-    public ResponseEntity<List<Client>>DeleteByName(@PathVariable(name = "name")String name){
-        List<Client> client = repository.DeleteByName(name);
 
-        return new ResponseEntity<List<Client>>(client,HttpStatus.OK);
-    }
+//   @DeleteMapping(path = "/clientes/{name}")
+//    public Optional<Client> FindDeleteByName(@PathVariable(name = "name")String name){
+//        Optional<Client> client = repository.delete(name);
+//        return client;
+//   }
 
+//    @DeleteMapping(path = "/clientes/{name}")
+//    public void DeleteByName(@PathVariable String name){
+//
+//        servicess.DeleteByName(name);
+//    }
+
+//    @DeleteMapping(path = "/clientes/{id}")
+//    public void deletar(@PathVariable Long id){
+//        servicess.deleteByid(id);
+//    }
 
 }

@@ -1,6 +1,7 @@
 package com.example.osprojeto.entity;
 
 
+import com.example.osprojeto.Dtos.GuaranteeDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,4 +25,11 @@ public class Guarantee {
     @ManyToOne
     @JoinColumn(name = "orderofservice_client")
     private OrderofService orderofService;
+
+    public Guarantee(GuaranteeDto guaranteeDto) {
+        this.id = guaranteeDto.id();
+        this.value = guaranteeDto.value();
+        this.extensiveValue = guaranteeDto.extensivevalue();
+        this.product = guaranteeDto.product();
+    }
 }
