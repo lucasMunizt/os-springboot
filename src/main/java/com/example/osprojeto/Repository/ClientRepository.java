@@ -13,6 +13,8 @@ public interface ClientRepository extends JpaRepository<Client,Long> {
     @Query(value = "select c from Client c where trim(c.name) like %?1%")
     List<Client> searchByName(String name);
 
+    void deleteByName(String name);
+
 //    @Query(value = "delete from Client c where like name = c.name ")
 //    List<Client>DeleteByName(String name);
 

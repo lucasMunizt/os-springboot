@@ -44,8 +44,8 @@ public class GuaranteeController {
         return guarantee;
     }
     @DeleteMapping(path = "/garantia/{id}")
-    public void deleteById(@PathVariable long id){
-        servicess.deleteByid(id);
+    public void deletar(@PathVariable Long id){
+        servicess.deletar(id);
     }
 
 }

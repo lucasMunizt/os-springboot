@@ -43,7 +43,7 @@ public class OrderofServiceController {
     }
 
     @DeleteMapping(path = "/servicos/{id}")
-    public void deleteById(@PathVariable long id){
+    public void deleteById(@PathVariable Long id){
         servicess.deleteByid(id);
     }
 

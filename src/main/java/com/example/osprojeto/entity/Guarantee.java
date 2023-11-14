@@ -29,7 +29,7 @@ public class Guarantee {
     public Guarantee(GuaranteeDto guaranteeDto) {
         this.id = guaranteeDto.id();
         this.value = guaranteeDto.value();
-        this.extensiveValue = guaranteeDto.extensivevalue();
+        this.extensiveValue = guaranteeDto.extensiveValue();
         this.product = guaranteeDto.product();
     }
 }
