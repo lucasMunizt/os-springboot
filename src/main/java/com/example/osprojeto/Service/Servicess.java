@@ -2,6 +2,7 @@ package com.example.osprojeto.Service;
 import com.example.osprojeto.Repository.ClientRepository;
 import com.example.osprojeto.Repository.GuaranteeRepository;
 import com.example.osprojeto.Repository.OrderofServiceRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +13,13 @@ public class Servicess {
     private OrderofServiceRepository orderRepository;
 
     @Autowired
-    private ClientRepository clientRepository;
+    private static ClientRepository clientRepository;
+
+    @Autowired
+    public Servicess(ClientRepository clienteRepository) {
+        this.clientRepository = clienteRepository;
+    }
+
     @Autowired
     private GuaranteeRepository guaranteeRepository;
 
@@ -23,9 +30,11 @@ public class Servicess {
     }
 
     //Cliente
-    public void excluir(Long id){
-        clientRepository.deleteById(id);
+
+    public static void DeleteByName(String name) {
+        clientRepository.deleteByName(name);
     }
+
 
     //garantia
     public void deletar(Long id){

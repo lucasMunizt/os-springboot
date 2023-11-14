@@ -7,6 +7,7 @@ import com.example.osprojeto.entity.Client;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -43,13 +44,17 @@ public class ClientController {
 
         return new ResponseEntity<List<Client>>(client,HttpStatus.OK);
     }
+//    @Transactional
+//    @DeleteMapping(path = "/client/{id}")
+//    public void excluir(@PathVariable Long id){
+//            servicess.excluir(id);
+//    }
+    @Transactional
+    @DeleteMapping("/client/{name}")
+    public String DeleteByName(@PathVariable String name) {
+        Servicess.DeleteByName(name);
+        return "Cliente com nome " + name + " deletado com sucesso!";
+    }
 
-    @DeleteMapping(path = "/client/{id}")
-    public void excluir(@PathVariable Long id){
-            servicess.excluir(id);
-    }
-        @DeleteMapping(path = "/client/{name}")
-        public void DeleteByName(@PathVariable String name){
-           repository.deleteByName(name);
-    }
+
 }
