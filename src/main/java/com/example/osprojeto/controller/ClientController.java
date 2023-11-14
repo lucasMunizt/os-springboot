@@ -48,8 +48,8 @@ public class ClientController {
     public void excluir(@PathVariable Long id){
             servicess.excluir(id);
     }
-        @DeleteMapping(path = "/client/{name}")
-        public void DeleteByName(@PathVariable String name){
-           repository.deleteByName(name);
+    @DeleteMapping(path = "/client/{name}")
+    public void DeleteByName(@PathVariable String name){
+       repository.deleteByName(name);
     }
 }
