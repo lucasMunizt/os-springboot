@@ -1,0 +1,66 @@
+o que falta para terminar o projeto OS
+
+1: autentificação do email
+
+2: controllers: 
+	ordem de servico, feito
+	
+	garantia, 
+		
+	clientes 
+
+3:conectar com banco mysql workbench feito
+
+Controllers:
+
+Ordem de servicos:
+get, feito
+post, feito
+get{id}, feito
+delete feito
+update
+
+Garantia:
+get,feito
+post,feito
+get{id},feito
+delete, feito
+update
+
+Cliente:
+get, feito
+post, fetio
+get{nome}, feito 
+delete
+
+
+
+jsons
+
+
+Client
+
+ {
+	"name": "lucas tadeu",
+	"telephone": "6552",
+	"addres": "Jose lourenço",
+	"neighboard": "calcaia"
+}
+
+ordem de servicos	
+
+{
+	"device": "maquina de lavar 8kg",
+	"claims": "está fazendo muito barulho,com luzez piscando",
+	"observation": "veio com arranhões e furregem",
+	"value": "586.00"
+}
+
+garantia
+
+{
+	"value": "250.00",
+	"extensiveValue": "duzentos e ciquenta",
+	"product": "tec"
+}
+
