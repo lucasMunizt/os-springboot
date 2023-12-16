@@ -44,11 +44,11 @@ public class ClientController {
 
         return new ResponseEntity<List<Client>>(client,HttpStatus.OK);
     }
-//    @Transactional
-//    @DeleteMapping(path = "/client/{id}")
-//    public void excluir(@PathVariable Long id){
-//            servicess.excluir(id);
-//    }
+    @Transactional
+    @DeleteMapping(path = "/client/{id}")
+    public void excluir(@PathVariable Long id){
+           repository.deleteById(id);
+    }
     @Transactional
     @DeleteMapping("/client/{name}")
     public String DeleteByName(@PathVariable String name) {
