@@ -27,9 +27,11 @@ public class User implements UserDetails {
     private String password;
     private UserRole role;
 
-    public User(UsersDto usersDto){
-        this.email = usersDto.email();
-        this.password = usersDto.password();
+    public User(String email,String password,UserRole role) {
+        this.email = email;
+        this.password = password;
+        this.role = role;
+
     }
 
     @Override
