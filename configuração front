@@ -1,0 +1,248 @@
+
+levando em conta esse código como seria a conexão com o front end usando js puro
+
+Editar
+
+Edit
+Full Screen
+Copy code
+package com.example.osprojeto.infra.security;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig {
+    @Autowired
+    SecurityFilter securityFilter;
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+        return httpSecurity
+                .csrf(csrf -> csrf.disable())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(authorize -> authorize
+                .requestMatchers(HttpMethod.POST,"/auth/login").permitAll()
+                .requestMatchers(HttpMethod.POST,"/auth/register").permitAll()
+                .requestMatchers(HttpMethod.POST,"/client").hasRole("ADMIN")
+                .anyRequest().authenticated()
+                )
+                .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
+                .build();
+    }
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
+    @Bean
+    public PasswordEncoder passwordEncoder(){
+        return new BCryptPasswordEncoder();
+    }
+
+}
+Edit
+Full Screen
+Copy code
+package com.example.osprojeto.infra.security;
+
+import com.example.osprojeto.Repository.UserRepository;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
+
+@Component
+public class SecurityFilter extends OncePerRequestFilter {
+
+    @Autowired
+    TokenService tokenService;
+
+    @Autowired
+    UserRepository repository;
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        var token = this.recoverToken(request);
+        if (token != null){
+            var login = tokenService.validateToken(token);
+            UserDetails user = repository.findByEmail(login);
+
+            var authentication = new UsernamePasswordAuthenticationToken(user,null,user.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+        }
+        filterChain.doFilter(request,response);
+    }
+    private String recoverToken(HttpServletRequest request){
+        var authHeader  = request.getHeader("Authorization");
+        if (authHeader == null) return null;
+        return authHeader.replace("Bearer ","");
+    }
+}
+Edit
+Full Screen
+Copy code
+package com.example.osprojeto.infra.security;
+
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTCreationException;
+import com.auth0.jwt.exceptions.JWTDecodeException;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.example.osprojeto.entity.User;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Service;
+
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+
+@Service
+public class TokenService {
+    @Value("${api.security.token.secret}")
+    private String secret;
+
+
+    public String GenereteToken(User user){
+        try {
+            Algorithm algorithm = Algorithm.HMAC256(secret);
+            String token = JWT.create()
+                    .withIssuer("auth-api")
+                    .withSubject(user.getEmail())
+                    .withExpiresAt(genExpirationDate())
+                    .sign(algorithm);
+            return token;
+        }catch (JWTCreationException exception){
+            throw new RuntimeException("Error while generation token",exception);
+        }
+    }
+
+    public String validateToken(String token){
+        try {
+            Algorithm algorithm = Algorithm.HMAC256(secret);
+            return JWT.require(algorithm).withIssuer("auth-api").build().verify(token).getSubject();
+        }catch (JWTVerificationException exception){
+            return "";
+        }
+    }
+
+    private Instant genExpirationDate(){
+        return LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.of("-03:00"));
+    }
+}
+Editar
+
+Para conectar a configuração fornecida do Spring Security com um front-end usando JavaScript simples, você pode fazer solicitações HTTP usando a API Fetch ou XMLHttpRequest (XHR). Para demonstrar, vamos supor que você tenha um ponto de extremidade de login em seu aplicativo Spring Boot em ./auth/login
+
+Usando
+javascript
+Editar
+Ecrã inteiro
+Copiar código
+async function login(username, password) {
+  try {
+    const response = await fetch('http://localhost:8080/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ username, password })
+    });
+
+    if (!response.ok) {
+      throw new Error('Login failed');
+    }
+
+    const data = await response.json();
+    console.log('Login successful:', data);
+
+    // Store the token in local storage or session storage
+    localStorage.setItem('token', data.token);
+
+  } catch (error) {
+    console.error('Error:', error);
+  }
+}
+Usando XMLHttpRequest:
+javascript
+Editar
+Ecrã inteiro
+Copiar código
+function login(username, password) {
+  const xhr = new XMLHttpRequest();
+  xhr.open('POST', 'http://localhost:8080/auth/login');
+  xhr.setRequestHeader('Content-Type', 'application/json');
+
+  xhr.onload = () => {
+    if (xhr.status === 200) {
+      const data = JSON.parse(xhr.responseText);
+      console.log('Login successful:', data);
+
+      // Store the token in local storage or session storage
+      localStorage.setItem('token', data.token);
+    } else {
+      console.error('Login failed');
+    }
+  };
+
+  xhr.onerror = () => {
+    console.error('Error:', xhr.statusText);
+  };
+
+  xhr.send(JSON.stringify({ username, password }));
+}
+Depois de fazer login, convém proteger suas outras solicitações adicionando o token ao cabeçalho Authorization. Aqui está um exemplo usando a API de busca:
+
+javascript
+Editar
+Ecrã inteiro
+Copiar código
+async function fetchSecure(url, method, body = null) {
+  const token = localStorage.getItem('token');
+
+  const headers = new Headers({
+    'Content-Type': 'application/json'
+  });
+
+  if (token) {
+    headers.append('Authorization', `Bearer ${token}`);
+  }
+
+  const response = await fetch(url, {
+    method,
+    headers,
+    body: JSON.stringify(body)
+  });
+
+  if (!response.ok) {
+    throw new Error('Request failed');
+  }
+
+  return response.json();
+}
+
+// Usage example
+const data = await fetchSecure('http://localhost:8080/client', 'GET');
+console.log('Client data:', data);
+Este exemplo demonstra como adicionar o token ao cabeçalho Authorization para solicitações seguras. Você pode personalizar a função para seu caso de uso específico.fetchSecure
+
+Em relação aos fornecidos e classes, eles são responsáveis por validar e gerar tokens JWT. O token é então enviado para o lado do cliente (front-end) após uma solicitação de login bem-sucedida. O lado do cliente armazena o token e o inclui no cabeçalho Authorization para solicitações seguras subsequentes.SecurityFilterTokenService
